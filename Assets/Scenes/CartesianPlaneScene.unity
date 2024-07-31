@@ -243,6 +243,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05305d82efeb82149b646c462f66ac65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  axisWidth: 0
   colorXAxis: {r: 0.44591236, g: 1, b: 0, a: 0}
   colorYAxis: {r: 0.41037738, g: 0.64768934, b: 1, a: 0}
 --- !u!4 &1511211765

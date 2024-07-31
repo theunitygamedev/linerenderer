@@ -5,10 +5,6 @@ using UnityEngine;
 
 public class DrawCartesianPlane : MonoBehaviour
 {
-
-    private Vector3 center;
-    private float screenWidth;
-    private float screenHeight;
     [SerializeField]
     private float axisWidth;
 
@@ -21,15 +17,16 @@ public class DrawCartesianPlane : MonoBehaviour
     void Start()
     {
         //get center of screen and set vector
-        screenWidth = Screen.width;
-        screenHeight = Screen.height;
-        axisWidth = 0.01f;
-        center = new Vector3(screenWidth / 2, screenHeight / 2, 0f);
 
-        Vector2 startPoint = new Vector2 (0f, center.y);
+        float screenWidth = Screen.width;
+        float screenHeight = Screen.height;
+        float axisWidth = 0.01f;
+        Vector3 center = new Vector3(screenWidth / 2, screenHeight / 2, 0f);
+
+        Vector2 startPoint = new Vector2(0f, center.y);
         Vector2 endPoint = new Vector2(screenWidth, center.y);
         LineRenderer lr;
-        
+
         //draw x axis
         lr = DrawLine("xAxisObject", startPoint, endPoint, colorXAxis, axisWidth);
         lr.transform.parent = transform;
@@ -49,9 +46,9 @@ public class DrawCartesianPlane : MonoBehaviour
 
         LineRenderer line = gameObject.AddComponent<LineRenderer>();
 
-        Vector3 startWorldPoint = Camera.main.ScreenToWorldPoint(new Vector3(startPoint.x,startPoint.y));
+        Vector3 startWorldPoint = Camera.main.ScreenToWorldPoint(new Vector3(startPoint.x, startPoint.y));
         startWorldPoint.z = 0f;
-        Vector3 endWorldPoint = Camera.main.ScreenToWorldPoint(new Vector3(endPoint.x,endPoint.y));
+        Vector3 endWorldPoint = Camera.main.ScreenToWorldPoint(new Vector3(endPoint.x, endPoint.y));
         endWorldPoint.z = 0f;
 
         line.startWidth = line.endWidth = lineWidth;
@@ -70,6 +67,6 @@ public class DrawCartesianPlane : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }
