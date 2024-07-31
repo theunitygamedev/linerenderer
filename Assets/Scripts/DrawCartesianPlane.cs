@@ -5,15 +5,11 @@ using UnityEngine;
 
 public class DrawCartesianPlane : MonoBehaviour
 {
-    private LineRenderer xAxisLineRenderer;
-    private LineRenderer yAxisLineRenderer;
+
     private Vector3 center;
-    private Vector3 xAxisStart;
-    private Vector3 xAxisEnd;
-    private Vector3 yAxisStart;
-    private Vector3 yAxisEnd;
     private float screenWidth;
     private float screenHeight;
+    [SerializeField]
     private float axisWidth;
 
     [SerializeField]
@@ -30,52 +26,45 @@ public class DrawCartesianPlane : MonoBehaviour
         axisWidth = 0.01f;
         center = new Vector3(screenWidth / 2, screenHeight / 2, 0f);
 
-        //we need to create empty gameobjects for the x and y axis.  
-        //only one linelender can be added to a gameobject
-        //since lines are drawn by connecting points we will need two so they don't overlap
-        //have the ability to control different colors for both
+        Vector2 startPoint = new Vector2 (0f, center.y);
+        Vector2 endPoint = new Vector2(screenWidth, center.y);
+        LineRenderer lr;
+        
+        //draw x axis
+        lr = DrawLine("xAxisObject", startPoint, endPoint, colorXAxis, axisWidth);
+        lr.transform.parent = transform;
 
-        GameObject xAxisObject = new GameObject("xAxisObject");
-        GameObject yAxisObject = new GameObject("yAxisObject");
+        //draw y axis
+        startPoint = new Vector2(center.x, 0f);
+        endPoint = new Vector2(center.x, screenHeight);
+        lr = DrawLine("yAxisObject", startPoint, endPoint, colorYAxis, axisWidth);
+        lr.transform.parent = transform;
 
-        //nexst both objects under the current transform
-        xAxisObject.transform.parent = transform;
-        yAxisObject.transform.parent = transform;
 
-        xAxisLineRenderer = xAxisObject.AddComponent<LineRenderer>();
+    }
 
-        xAxisStart = Camera.main.ScreenToWorldPoint(new Vector3(0f, center.y));
-        xAxisStart.z = 0f;
-        xAxisEnd = Camera.main.ScreenToWorldPoint(new Vector3(screenWidth, center.y));
-        xAxisEnd.z = 0f;
+    private LineRenderer DrawLine(string name, Vector2 startPoint, Vector2 endPoint, Color color, float lineWidth)
+    {
+        GameObject gameObject = new GameObject(name);
 
-        xAxisLineRenderer.startWidth = xAxisLineRenderer.endWidth = axisWidth;
-        xAxisLineRenderer.positionCount = 2;
+        LineRenderer line = gameObject.AddComponent<LineRenderer>();
 
-        xAxisLineRenderer.material = new Material(Shader.Find("Unlit/Color"));
-        xAxisLineRenderer.material.color = colorXAxis;
+        Vector3 startWorldPoint = Camera.main.ScreenToWorldPoint(new Vector3(startPoint.x,startPoint.y));
+        startWorldPoint.z = 0f;
+        Vector3 endWorldPoint = Camera.main.ScreenToWorldPoint(new Vector3(endPoint.x,endPoint.y));
+        endWorldPoint.z = 0f;
 
-        //Set start and end points for line renderer.  A line will be automatically drawn in between.
-        xAxisLineRenderer.SetPosition(0, xAxisStart);
-        xAxisLineRenderer.SetPosition(1, xAxisEnd);
+        line.startWidth = line.endWidth = lineWidth;
+        line.positionCount = 2;
 
-        yAxisLineRenderer = yAxisObject.AddComponent<LineRenderer>();
-
-        yAxisStart = Camera.main.ScreenToWorldPoint(new Vector3(center.x, 0f));
-        yAxisStart.z = 0f;
-        yAxisEnd = Camera.main.ScreenToWorldPoint(new Vector3(center.x, screenHeight));
-        yAxisEnd.z = 0f;
-
-        yAxisLineRenderer.startWidth = yAxisLineRenderer.endWidth = axisWidth;
-        yAxisLineRenderer.positionCount = 2;
-
-        yAxisLineRenderer.material = new Material(Shader.Find("Unlit/Color"));
-        yAxisLineRenderer.material.color = colorYAxis;
+        line.material = new Material(Shader.Find("Unlit/Color"));
+        line.material.color = color;
 
         //Set start and end points for line renderer.  A line will be automatically drawn in between.
-        yAxisLineRenderer.SetPosition(0, yAxisStart);
-        yAxisLineRenderer.SetPosition(1, yAxisEnd);
+        line.SetPosition(0, startWorldPoint);
+        line.SetPosition(1, endWorldPoint);
 
+        return line;
     }
 
     // Update is called once per frame
