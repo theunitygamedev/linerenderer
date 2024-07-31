@@ -30,10 +30,17 @@ public class DrawCartesianPlane : MonoBehaviour
         axisWidth = 0.01f;
         center = new Vector3(screenWidth / 2, screenHeight / 2, 0f);
 
-        GameObject xAxisObject = new GameObject();
-        GameObject yAxisObject = new GameObject();
+        //we need to create empty gameobjects for the x and y axis.  
+        //only one linelender can be added to a gameobject
+        //since lines are drawn by connecting points we will need two so they don't overlap
+        //have the ability to control different colors for both
 
-        
+        GameObject xAxisObject = new GameObject("xAxisObject");
+        GameObject yAxisObject = new GameObject("yAxisObject");
+
+        //nexst both objects under the current transform
+        xAxisObject.transform.parent = transform;
+        yAxisObject.transform.parent = transform;
 
         xAxisLineRenderer = xAxisObject.AddComponent<LineRenderer>();
 
