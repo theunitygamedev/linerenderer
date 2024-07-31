@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class DrawCartesianPlane : MonoBehaviour
@@ -23,41 +24,51 @@ public class DrawCartesianPlane : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SetCenter();
-
-        xAxisStart = Camera.main.ScreenToWorldPoint(new Vector3(0f, center.y));
-        xAxisStart.z = 0f;
-        xAxisEnd = Camera.main.ScreenToWorldPoint(new Vector3(screenWidth, center.y));
-        xAxisEnd.z = 0f;  
-        
-        xAxisLineRenderer = gameObject.AddComponent<LineRenderer>();
-        
-        xAxisLineRenderer.startWidth = xAxisLineRenderer.endWidth = axisWidth;
-        xAxisLineRenderer.positionCount = 2;
-
-        SetColor();
-        SetStartEndPoints();
-
-    }
-    private void SetCenter()
-    {
-        //get lengths of screen
+        //get center of screen and set vector
         screenWidth = Screen.width;
         screenHeight = Screen.height;
         axisWidth = 0.01f;
         center = new Vector3(screenWidth / 2, screenHeight / 2, 0f);
-    }
-    private void SetColor()
-    {
+
+        GameObject xAxisObject = new GameObject();
+        GameObject yAxisObject = new GameObject();
+
+        
+
+        xAxisLineRenderer = xAxisObject.AddComponent<LineRenderer>();
+
+        xAxisStart = Camera.main.ScreenToWorldPoint(new Vector3(0f, center.y));
+        xAxisStart.z = 0f;
+        xAxisEnd = Camera.main.ScreenToWorldPoint(new Vector3(screenWidth, center.y));
+        xAxisEnd.z = 0f;
+
+        xAxisLineRenderer.startWidth = xAxisLineRenderer.endWidth = axisWidth;
+        xAxisLineRenderer.positionCount = 2;
+
         xAxisLineRenderer.material = new Material(Shader.Find("Unlit/Color"));
         xAxisLineRenderer.material.color = colorXAxis;
 
-    }
-
-    private void SetStartEndPoints()
-    {
+        //Set start and end points for line renderer.  A line will be automatically drawn in between.
         xAxisLineRenderer.SetPosition(0, xAxisStart);
         xAxisLineRenderer.SetPosition(1, xAxisEnd);
+
+        yAxisLineRenderer = yAxisObject.AddComponent<LineRenderer>();
+
+        yAxisStart = Camera.main.ScreenToWorldPoint(new Vector3(center.x, 0f));
+        yAxisStart.z = 0f;
+        yAxisEnd = Camera.main.ScreenToWorldPoint(new Vector3(center.x, screenHeight));
+        yAxisEnd.z = 0f;
+
+        yAxisLineRenderer.startWidth = yAxisLineRenderer.endWidth = axisWidth;
+        yAxisLineRenderer.positionCount = 2;
+
+        yAxisLineRenderer.material = new Material(Shader.Find("Unlit/Color"));
+        yAxisLineRenderer.material.color = colorYAxis;
+
+        //Set start and end points for line renderer.  A line will be automatically drawn in between.
+        yAxisLineRenderer.SetPosition(0, yAxisStart);
+        yAxisLineRenderer.SetPosition(1, yAxisEnd);
+
     }
 
     // Update is called once per frame
