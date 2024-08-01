@@ -6,6 +6,15 @@ using UnityEngine;
 public class DrawCartesianPlane : MonoBehaviour
 {
     [SerializeField]
+    private int numXAxisUnits;
+
+    [SerializeField]
+    private string xAxisLabel;
+
+    [SerializeField]
+    private string yAxisLabel;
+
+    [SerializeField]
     private float axisWidth;
 
     [SerializeField]
@@ -36,6 +45,8 @@ public class DrawCartesianPlane : MonoBehaviour
         endPoint = new Vector2(center.x, screenHeight);
         lr = DrawLine("yAxisObject", startPoint, endPoint, colorYAxis, axisWidth);
         lr.transform.parent = transform;
+
+        //add
 
 
     }
