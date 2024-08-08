@@ -55,7 +55,7 @@ public class DrawCartesianPlane : MonoBehaviour
         lr = DrawAxisUnits("xAxisUnitTicks", numXAxisUnits, colorXAxis, center, screenWidth, screenHeight,axisTickWidth,20.0f,"x");
         lr.transform.parent = transform;
 
-        lr = DrawAxisUnits("yAxisUnitTicks", numXAxisUnits, colorXAxis, center, screenWidth, screenHeight, axisTickWidth, 20.0f, "y");
+        lr = DrawAxisUnits("yAxisUnitTicks", numXAxisUnits, colorYAxis, center, screenWidth, screenHeight, axisTickWidth, 20.0f, "y");
         lr.transform.parent = transform;
 
     }
@@ -100,9 +100,7 @@ public class DrawCartesianPlane : MonoBehaviour
         line.positionCount = numUnitsNeeded;
 
         line.material = new Material(Shader.Find("Unlit/Color"));
-        line.material.color = color;
-
-        
+        line.material.color = color;      
 
         //line.SetPosition(0, startWorldPoint);
         float stepLength = screenWidth / 2.0f / numUnits;
@@ -111,41 +109,33 @@ public class DrawCartesianPlane : MonoBehaviour
         if (axis == "x")
         {
             float curX = 0f;
-            float curY = center.y;
+            float curY;
+
+            Vector3 pointScreen;
+            Vector3 pointWorld;
 
             for (int i = 0; i < numUnitsNeeded; i++)
             {
                 //start on x axis at left most point of screen
-                Vector3 pointScreen = new Vector3(curX, center.y);
-                Vector3 pointWorld = Camera.main.ScreenToWorldPoint(pointScreen);
-                pointWorld.z = 0f;
-                line.SetPosition(i, pointWorld);
+                SetLinePosition(curX, center.y, line,i);
 
                 i++;
 
                 //go up 1/2 unitTickLineLength length (above x axis)
                 curY = center.y + tickerHalf;
-                pointScreen = new Vector3(curX, curY);
-                pointWorld = Camera.main.ScreenToWorldPoint(pointScreen);
-                pointWorld.z = 0f;
-                line.SetPosition(i, pointWorld);
+                SetLinePosition(curX, curY, line, i);
 
                 i++;
 
                 //go down 1 unitTickLineLength (below x axis)
                 curY = center.y - tickerHalf;
-                pointScreen = new Vector3(curX, curY);
-                pointWorld = Camera.main.ScreenToWorldPoint(pointScreen);
-                pointWorld.z = 0f;
-                line.SetPosition(i, pointWorld);
+                SetLinePosition(curX, curY, line, i);
 
                 i++;
-                //go back to x axis which center.y (back to x axis) 
+
+                //go back to center.y which is the x axis y coordinate
                 curY = center.y;
-                pointScreen = new Vector3(curX, curY);
-                pointWorld = Camera.main.ScreenToWorldPoint(pointScreen);
-                pointWorld.z = 0f;
-                line.SetPosition(i, pointWorld);
+                SetLinePosition(curX, curY, line, i);
 
                 //move to the right by stepLength distance
                 curX += stepLength;
@@ -154,42 +144,34 @@ public class DrawCartesianPlane : MonoBehaviour
         }
         else //y axis
         {
-            float curX = center.x;
+            float curX;
             float curY = 0f;
+
+            // draw the same number of y unit tickers as x. THis will also handle the case where a screen is longer in the y axis
+            curY = center.y - (screenWidth / 2.0f);
 
             for (int i = 0; i < numUnitsNeeded; i++)
             {
                 //start on y axis at bottom of screen
-                Vector3 pointScreen = new Vector3(center.x, 0f);
-                Vector3 pointWorld = Camera.main.ScreenToWorldPoint(pointScreen);
-                pointWorld.z = 0f;
-                line.SetPosition(i, pointWorld);
+                SetLinePosition(center.x, curY, line, i);
 
                 i++;
 
                 //go left 1/2 unitTickLineLength length (left of y axis)
                 curX = center.x - tickerHalf;
-                pointScreen = new Vector3(curX, curY);
-                pointWorld = Camera.main.ScreenToWorldPoint(pointScreen);
-                pointWorld.z = 0f;
-                line.SetPosition(i, pointWorld);
+                SetLinePosition(curX, curY, line, i);
 
                 i++;
 
                 //go right 1 unitTickLineLength (right of y axis)
                 curX = center.x + tickerHalf;
-                pointScreen = new Vector3(curX, curY);
-                pointWorld = Camera.main.ScreenToWorldPoint(pointScreen);
-                pointWorld.z = 0f;
-                line.SetPosition(i, pointWorld);
+                SetLinePosition(curX, curY, line, i);
 
                 i++;
+
                 //go back to y axis x coordinate
                 curX = center.x;
-                pointScreen = new Vector3(curX, curY);
-                pointWorld = Camera.main.ScreenToWorldPoint(pointScreen);
-                pointWorld.z = 0f;
-                line.SetPosition(i, pointWorld);
+                SetLinePosition(curX, curY, line, i);
 
                 //move to the right by stepLength distance
                 curY += stepLength;
@@ -197,11 +179,15 @@ public class DrawCartesianPlane : MonoBehaviour
             }
         }
             
-        
-
-
-
         return line;
+    }
+
+    void SetLinePosition(float x, float y, LineRenderer line, int index)
+    {
+        Vector3 pointScreen = new Vector3(x, y);
+        Vector3 pointWorld = Camera.main.ScreenToWorldPoint(pointScreen);
+        pointWorld.z = 0f;
+        line.SetPosition(index, pointWorld);
     }
 
     // Update is called once per frame
