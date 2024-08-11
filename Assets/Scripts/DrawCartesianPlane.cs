@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
+using System;
 
 public class DrawCartesianPlane : MonoBehaviour
 {
@@ -26,12 +29,16 @@ public class DrawCartesianPlane : MonoBehaviour
     [SerializeField]
     private float axisTickWidth;
 
+    [SerializeField]
+    private float unitFontSize;
+
+    private GameObject canvasObject;
+
 
     // Start is called before the first frame update
     void Start()
     {
         //get center of screen and set vector
-
         float screenWidth = Screen.width;
         float screenHeight = Screen.height;
         Vector3 center = new Vector3(screenWidth / 2, screenHeight / 2, 0f);
@@ -39,6 +46,11 @@ public class DrawCartesianPlane : MonoBehaviour
         Vector2 startPoint = new Vector2(0f, center.y);
         Vector2 endPoint = new Vector2(screenWidth, center.y);
         LineRenderer lr;
+
+        canvasObject = new GameObject("Canvas");
+        canvasObject.AddComponent<Canvas>();
+        canvasObject.AddComponent<CanvasScaler>();
+        canvasObject.AddComponent<GraphicRaycaster>();
 
         //draw x axis
         lr = DrawLine("xAxisObject", startPoint, endPoint, colorXAxis, axisWidth);
@@ -59,6 +71,29 @@ public class DrawCartesianPlane : MonoBehaviour
         lr.transform.parent = transform;
 
     }
+
+    private void PlaceText(string text, Vector2 position, GameObject canvasObject)
+    {
+        
+        GameObject tmProObject = new GameObject(text);
+        TextMeshPro tm = tmProObject.AddComponent<TextMeshPro>();
+        tmProObject.transform.parent = canvasObject.transform;
+        canvasObject.transform.parent = this.transform;
+        tm.text = text;
+        tm.fontSize = unitFontSize;
+        tm.alignment = TextAlignmentOptions.Center;
+
+        RectTransform rt = tm.GetComponent<RectTransform>();
+        rt.sizeDelta = new Vector2(2f, 0f);
+
+        Vector3 pointScreen = new Vector3(position.x, position.y-10.0f);
+        Vector3 pointWorld = Camera.main.ScreenToWorldPoint(pointScreen);
+        pointWorld.z = 0f;
+
+        tm.transform.position = pointWorld;
+
+    }
+
 
     private LineRenderer DrawLine(string name, Vector2 startPoint, Vector2 endPoint, Color color, float lineWidth)
     {
@@ -105,14 +140,13 @@ public class DrawCartesianPlane : MonoBehaviour
         //line.SetPosition(0, startWorldPoint);
         float stepLength = screenWidth / 2.0f / numUnits;
         float tickerHalf = unitTickLineLength / 2.0f;
+
+        int unitCount = (numUnits * -1);
         //draw axis units 
         if (axis == "x")
         {
             float curX = 0f;
             float curY;
-
-            Vector3 pointScreen;
-            Vector3 pointWorld;
 
             for (int i = 0; i < numUnitsNeeded; i++)
             {
@@ -130,6 +164,11 @@ public class DrawCartesianPlane : MonoBehaviour
                 //go down 1 unitTickLineLength (below x axis)
                 curY = center.y - tickerHalf;
                 SetLinePosition(curX, curY, line, i);
+                PlaceText(unitCount.ToString(), new Vector2(curX, curY),canvasObject);
+                unitCount++;
+
+                //this is where we want to draw the unit desgination like 1, 2, 10 etc
+
 
                 i++;
 
@@ -145,7 +184,7 @@ public class DrawCartesianPlane : MonoBehaviour
         else //y axis
         {
             float curX;
-            float curY = 0f;
+            float curY;
 
             // draw the same number of y unit tickers as x. THis will also handle the case where a screen is longer in the y axis
             curY = center.y - (screenWidth / 2.0f);
@@ -182,12 +221,17 @@ public class DrawCartesianPlane : MonoBehaviour
         return line;
     }
 
-    void SetLinePosition(float x, float y, LineRenderer line, int index)
+    private void SetLinePosition(float x, float y, LineRenderer line, int index)
     {
         Vector3 pointScreen = new Vector3(x, y);
         Vector3 pointWorld = Camera.main.ScreenToWorldPoint(pointScreen);
         pointWorld.z = 0f;
         line.SetPosition(index, pointWorld);
+    }
+
+    private void DrawUnit()
+    {
+
     }
 
     // Update is called once per frame
