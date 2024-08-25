@@ -214,7 +214,7 @@ public class DrawCartesianPlane : MonoBehaviour
 
                 //move to the right by stepLength distance
                 curY += stepLength;
-                Debug.Log(i);
+                //Debug.Log(i);
             }
         }
             
